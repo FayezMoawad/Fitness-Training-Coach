@@ -8,6 +8,7 @@ from fastapi.responses import JSONResponse
 from app.api.auth import router as auth_router
 from app.api.health import router as health_router
 from app.api.logs import router as logs_router
+from app.api.progress import router as progress_router
 from app.api.workouts import router as workouts_router
 
 logger = logging.getLogger(__name__)
@@ -18,6 +19,7 @@ app.include_router(health_router)
 app.include_router(auth_router)
 app.include_router(workouts_router)
 app.include_router(logs_router)
+app.include_router(progress_router)
 
 
 @app.exception_handler(Exception)
