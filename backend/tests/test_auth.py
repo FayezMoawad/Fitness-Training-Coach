@@ -86,6 +86,19 @@ def test_login_nonexistent_email_returns_401(client):
     assert response.status_code == 401
 
 
+def test_login_missing_password_returns_422(client):
+    response = client.post("/auth/login", json={"email": "coach@example.com"})
+    assert response.status_code == 422
+
+
+def test_signup_missing_role_returns_422(client):
+    response = client.post(
+        "/auth/signup",
+        json={"email": "coach@example.com", "password": "supersecret1", "full_name": "Coach"},
+    )
+    assert response.status_code == 422
+
+
 def test_protected_route_without_token_returns_401(client):
     response = client.get("/auth/me")
     assert response.status_code == 401

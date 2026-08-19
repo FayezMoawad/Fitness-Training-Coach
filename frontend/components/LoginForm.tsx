@@ -4,6 +4,8 @@ import { useState } from "react";
 import type { FormEvent } from "react";
 import { useRouter } from "next/navigation";
 
+import { FormError } from "@/components/FormError";
+import { submitJson } from "@/lib/formSubmit";
 import type { User } from "@/types/user";
 
 const inputClass =
@@ -21,26 +23,16 @@ export function LoginForm() {
     setError(null);
     setIsSubmitting(true);
 
-    try {
-      const response = await fetch("/api/auth/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
-      });
-      const data: { user?: User; detail?: string } = await response.json();
+    const result = await submitJson<{ user: User }>("/api/auth/login", { email, password });
+    setIsSubmitting(false);
 
-      if (!response.ok || !data.user) {
-        setError(data.detail ?? "Login failed");
-        return;
-      }
-
-      router.push(`/${data.user.role}/dashboard`);
-      router.refresh();
-    } catch {
-      setError("Something went wrong. Please try again.");
-    } finally {
-      setIsSubmitting(false);
+    if (!result.ok) {
+      setError(result.error);
+      return;
     }
+
+    router.push(`/${result.data.user.role}/dashboard`);
+    router.refresh();
   }
 
   return (
@@ -69,11 +61,7 @@ export function LoginForm() {
         />
       </label>
 
-      {error && (
-        <p role="alert" className="text-sm text-red-600 dark:text-red-400">
-          {error}
-        </p>
-      )}
+      <FormError message={error} />
 
       <button
         type="submit"

@@ -82,6 +82,34 @@ def test_coach_assigns_workout_to_nonexistent_user_returns_400(client):
     assert response.status_code == 400
 
 
+def test_coach_assigns_workout_with_missing_client_id_returns_422(client):
+    coach_headers = auth_headers_for_coach(client)
+    workout = client.post(
+        "/workouts", json={"name": "Leg Day"}, headers=coach_headers
+    ).json()
+
+    response = client.post(
+        f"/workouts/{workout['id']}/assign", json={}, headers=coach_headers
+    )
+
+    assert response.status_code == 422
+
+
+def test_coach_assigns_workout_with_non_integer_client_id_returns_422(client):
+    coach_headers = auth_headers_for_coach(client)
+    workout = client.post(
+        "/workouts", json={"name": "Leg Day"}, headers=coach_headers
+    ).json()
+
+    response = client.post(
+        f"/workouts/{workout['id']}/assign",
+        json={"client_id": "not-a-number"},
+        headers=coach_headers,
+    )
+
+    assert response.status_code == 422
+
+
 def test_coach_assigns_workout_to_a_coach_returns_400(client):
     coach_headers = auth_headers_for_coach(client)
     other_coach_headers = auth_headers_for_coach(client, email="other-coach@example.com")

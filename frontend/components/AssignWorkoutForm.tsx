@@ -4,7 +4,9 @@ import { useState } from "react";
 import type { FormEvent } from "react";
 import { useRouter } from "next/navigation";
 
-import type { Workout } from "@/types/workout";
+import { FormError } from "@/components/FormError";
+import { submitJson } from "@/lib/formSubmit";
+import type { Assignment, Workout } from "@/types/workout";
 
 const inputClass =
   "mt-1 block w-full rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-900 focus:border-zinc-500 focus:outline-none dark:border-zinc-700 dark:bg-zinc-950 dark:text-zinc-50";
@@ -40,26 +42,18 @@ export function AssignWorkoutForm({ workouts, knownClientIds }: AssignWorkoutFor
     }
 
     setIsSubmitting(true);
-    try {
-      const response = await fetch(`/api/workouts/${workoutId}/assign`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ client_id: parsedClientId }),
-      });
-      const data: { detail?: string } = await response.json();
+    const result = await submitJson<Assignment>(`/api/workouts/${workoutId}/assign`, {
+      client_id: parsedClientId,
+    });
+    setIsSubmitting(false);
 
-      if (!response.ok) {
-        setError(data.detail ?? "Could not assign workout.");
-        return;
-      }
-
-      setClientId("");
-      router.refresh();
-    } catch {
-      setError("Something went wrong. Please try again.");
-    } finally {
-      setIsSubmitting(false);
+    if (!result.ok) {
+      setError(result.error);
+      return;
     }
+
+    setClientId("");
+    router.refresh();
   }
 
   if (workouts.length === 0) {
@@ -116,11 +110,7 @@ export function AssignWorkoutForm({ workouts, knownClientIds }: AssignWorkoutFor
         </div>
       )}
 
-      {error && (
-        <p role="alert" className="text-sm text-red-600 dark:text-red-400">
-          {error}
-        </p>
-      )}
+      <FormError message={error} />
 
       <button
         type="submit"

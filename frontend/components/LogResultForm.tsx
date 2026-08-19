@@ -4,6 +4,10 @@ import { useState } from "react";
 import type { FormEvent } from "react";
 import { useRouter } from "next/navigation";
 
+import { FormError } from "@/components/FormError";
+import { submitJson } from "@/lib/formSubmit";
+import type { WorkoutLog } from "@/types/workout";
+
 interface ExerciseRow {
   name: string;
   sets: string;
@@ -71,25 +75,18 @@ export function LogResultForm({ assignmentId }: { assignmentId: number }) {
     }
 
     setIsSubmitting(true);
-    try {
-      const response = await fetch(`/api/assignments/${assignmentId}/logs`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ exercises: parsedExercises, notes: notes.trim() || null }),
-      });
-      const data: { detail?: string } = await response.json();
+    const result = await submitJson<WorkoutLog>(`/api/assignments/${assignmentId}/logs`, {
+      exercises: parsedExercises,
+      notes: notes.trim() || null,
+    });
+    setIsSubmitting(false);
 
-      if (!response.ok) {
-        setError(data.detail ?? "Could not log workout result.");
-        return;
-      }
-
-      router.refresh();
-    } catch {
-      setError("Something went wrong. Please try again.");
-    } finally {
-      setIsSubmitting(false);
+    if (!result.ok) {
+      setError(result.error);
+      return;
     }
+
+    router.refresh();
   }
 
   return (
@@ -170,11 +167,7 @@ export function LogResultForm({ assignmentId }: { assignmentId: number }) {
         />
       </label>
 
-      {error && (
-        <p role="alert" className="text-sm text-red-600 dark:text-red-400">
-          {error}
-        </p>
-      )}
+      <FormError message={error} />
 
       <button
         type="submit"

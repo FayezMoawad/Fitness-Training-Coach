@@ -4,6 +4,10 @@ import { useState } from "react";
 import type { FormEvent } from "react";
 import { useRouter } from "next/navigation";
 
+import { FormError } from "@/components/FormError";
+import { submitJson } from "@/lib/formSubmit";
+import type { Workout } from "@/types/workout";
+
 const inputClass =
   "mt-1 block w-full rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-900 focus:border-zinc-500 focus:outline-none dark:border-zinc-700 dark:bg-zinc-950 dark:text-zinc-50";
 
@@ -28,30 +32,20 @@ export function WorkoutForm() {
     }
 
     setIsSubmitting(true);
-    try {
-      const response = await fetch("/api/workouts", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name: trimmedName,
-          description: description.trim() || null,
-        }),
-      });
-      const data: { detail?: string } = await response.json();
+    const result = await submitJson<Workout>("/api/workouts", {
+      name: trimmedName,
+      description: description.trim() || null,
+    });
+    setIsSubmitting(false);
 
-      if (!response.ok) {
-        setError(data.detail ?? "Could not create workout.");
-        return;
-      }
-
-      setName("");
-      setDescription("");
-      router.refresh();
-    } catch {
-      setError("Something went wrong. Please try again.");
-    } finally {
-      setIsSubmitting(false);
+    if (!result.ok) {
+      setError(result.error);
+      return;
     }
+
+    setName("");
+    setDescription("");
+    router.refresh();
   }
 
   return (
@@ -77,11 +71,7 @@ export function WorkoutForm() {
         />
       </label>
 
-      {error && (
-        <p role="alert" className="text-sm text-red-600 dark:text-red-400">
-          {error}
-        </p>
-      )}
+      <FormError message={error} />
 
       <button
         type="submit"
