@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { redirect } from "next/navigation";
 
 import { AssignWorkoutForm } from "@/components/AssignWorkoutForm";
@@ -90,9 +91,12 @@ export default async function CoachWorkoutsPage() {
                     <p className="font-medium text-zinc-900 dark:text-zinc-50">
                       {workout?.name ?? `Workout #${assignment.workout_id}`}
                     </p>
-                    <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
-                      Client #{assignment.client_id}
-                    </p>
+                    <Link
+                      href={`/coach/clients/${assignment.client_id}/progress`}
+                      className="mt-1 block text-sm text-zinc-600 underline dark:text-zinc-400"
+                    >
+                      Client #{assignment.client_id} — view progress
+                    </Link>
                   </div>
                   <span className="rounded-full border border-zinc-300 px-2.5 py-1 text-xs font-medium text-zinc-700 dark:border-zinc-700 dark:text-zinc-300">
                     {statusLabel[assignment.status]}

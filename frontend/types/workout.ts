@@ -30,3 +30,17 @@ export interface WorkoutLog {
   notes: string | null;
   logged_at: string;
 }
+
+export interface ClientProgressAssignment {
+  assignment_id: number;
+  workout_id: number;
+  workout_name: string;
+  status: AssignmentStatus;
+  assigned_at: string;
+  logs: WorkoutLog[];
+}
+
+export interface ClientProgressResponse {
+  client_id: number;
+  assignments: ClientProgressAssignment[];
+}
