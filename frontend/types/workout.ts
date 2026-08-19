@@ -15,3 +15,18 @@ export interface Assignment {
   assigned_at: string;
   status: AssignmentStatus;
 }
+
+export interface ExerciseResult {
+  name: string;
+  sets: number;
+  reps: number;
+  weight: number;
+}
+
+export interface WorkoutLog {
+  id: number;
+  assignment_id: number;
+  exercises: ExerciseResult[];
+  notes: string | null;
+  logged_at: string;
+}
