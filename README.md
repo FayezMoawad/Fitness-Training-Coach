@@ -1,4 +1,7 @@
 # Fitness-Training-Coach
+
+[![CI](https://github.com/FayezMoawad/Fitness-Training-Coach/actions/workflows/ci.yml/badge.svg)](https://github.com/FayezMoawad/Fitness-Training-Coach/actions/workflows/ci.yml)
+
 A fitness training coach application designed to help users plan workouts, track progress, and stay consistent with their fitness goals.
 
 ## Status
