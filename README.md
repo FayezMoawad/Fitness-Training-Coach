@@ -23,4 +23,14 @@ A fitness training coach application designed to help users plan workouts, track
 - Step 13 — CI pipeline ([`.github/workflows/ci.yml`](.github/workflows/ci.yml))
 - Step 14 — Deployment readiness ([`docs/DEPLOYMENT.md`](docs/DEPLOYMENT.md))
 
-See [`docs/DEVELOPMENT.md`](docs/DEVELOPMENT.md) to run the project locally.
+## Try it
+
+The app isn't deployed anywhere public yet — run it locally, then open **[localhost:3000](http://localhost:3000)**. See [`docs/DEVELOPMENT.md`](docs/DEVELOPMENT.md) for full setup (backend + Postgres + frontend); the short version:
+
+```bash
+# backend (needs DATABASE_URL and JWT_SECRET set — see backend/.env.example)
+cd backend && alembic upgrade head && uvicorn app.main:app --reload
+
+# frontend, in another terminal
+cd frontend && npm install && npm run dev
+```
