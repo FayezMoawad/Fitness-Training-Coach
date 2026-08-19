@@ -1,0 +1,21 @@
+# Backend (Python)
+__pycache__/
+*.pyc
+.venv/
+*.egg-info/
+.pytest_cache/
+
+# Frontend (Node/Next.js) — frontend/ also has its own .gitignore generated
+# by create-next-app; this covers the monorepo root as well.
+node_modules/
+.next/
+out/
+
+# Env files — never commit real secrets, only .env.example files
+.env
+.env.*
+!.env.example
+!**/.env.example
+
+# OS / editor
+.DS_Store
