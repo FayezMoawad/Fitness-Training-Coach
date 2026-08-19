@@ -6,6 +6,7 @@
  */
 
 import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 
 import { apiClient, ApiError } from "@/lib/apiClient";
 import { SESSION_COOKIE_NAME } from "@/lib/constants";
@@ -33,6 +34,30 @@ export async function getCurrentUser(): Promise<User | null> {
   } catch (error) {
     if (error instanceof ApiError && error.status === 401) {
       return null;
+    }
+    throw error;
+  }
+}
+
+/** For protected Server Component pages that also need to make further
+ * authenticated backend calls (e.g. GET /workouts) — returns both the user
+ * and the raw token, redirecting to /login if there's no valid session.
+ * `proxy.ts` already blocks unauthenticated requests to /coach/* and
+ * /client/*, but this is the real (non-UX-only) check. */
+export async function requireUser(): Promise<{ user: User; token: string }> {
+  const token = await getSessionToken();
+  if (!token) {
+    redirect("/login");
+  }
+
+  try {
+    const user = await apiClient.get<User>("/auth/me", {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return { user, token };
+  } catch (error) {
+    if (error instanceof ApiError && error.status === 401) {
+      redirect("/login");
     }
     throw error;
   }

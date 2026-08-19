@@ -21,6 +21,13 @@ export default async function ClientDashboardPage() {
       <p className="mt-2 text-zinc-600 dark:text-zinc-400">
         Your assigned workouts are coming in the next step.
       </p>
+      <p className="mt-6 text-sm text-zinc-600 dark:text-zinc-400">
+        Your client ID is{" "}
+        <span className="rounded-md bg-zinc-100 px-1.5 py-0.5 font-mono font-medium text-zinc-900 dark:bg-zinc-900 dark:text-zinc-50">
+          {user.id}
+        </span>{" "}
+        — share it with your coach so they can assign you a workout.
+      </p>
     </div>
   );
 }
